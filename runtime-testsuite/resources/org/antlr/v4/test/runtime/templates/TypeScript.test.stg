@@ -210,7 +210,7 @@ class LeafListener extends <X>Listener {
 	exitA? = (ctx: AContext) => {
     	var str;
         if(ctx.getChildCount()===2) {
-            str = ctx.INT(0).symbol.text + ' ' + ctx.INT(1).symbol.text + ' ' + arrayToString(ctx.INT_list());
+            str = ctx.INT(0).symbol.text + ' ' + ctx.INT(1).symbol.text + ' ' + arrayToString(ctx.INT__list());
         } else {
             str = ctx.ID()!.symbol.toString();
         }
@@ -230,7 +230,7 @@ class LeafListener extends <X>Listener {
 	exitA? = (ctx: AContext) => {
     	var str;
         if(ctx.getChildCount()===2) {
-            str = ctx.b(0).start.text + ' ' + ctx.b(1).start.text + ' ' + ctx.b_list()[0].start.text;
+            str = ctx.b(0).start.text + ' ' + ctx.b(1).start.text + ' ' + ctx.b__list()[0].start.text;
         } else {
             str = ctx.b(0).start.text;
         }
@@ -250,7 +250,7 @@ class LeafListener extends <X>Listener {
 	exitE? = (ctx: EContext) => {
     	var str;
         if(ctx.getChildCount()===3) {
-            str = ctx.e(0).start.text + ' ' + ctx.e(1).start.text + ' ' + ctx.e_list()[0].start.text;
+            str = ctx.e(0).start.text + ' ' + ctx.e(1).start.text + ' ' + ctx.e__list()[0].start.text;
         } else {
             str = ctx.INT()!.symbol.text;
         }
@@ -285,8 +285,8 @@ class LeafListener extends <X>Listener {
 DeclareContextListGettersFunction() ::= <<
 	foo() {
 		var s = new SContext();
-	    var a = s.a_list();
-	    var b = s.b_list();
+	    var a = s.a__list();
+	    var b = s.b__list();
     };
 >>
 
@@ -305,7 +305,7 @@ Declare_pred() ::= <<
 Invoke_pred(v) ::= <<this.pred(<v>)>>
 ParserTokenType(t) ::= "Parser.<t>"
 ContextRuleFunction(ctx, rule) ::= "<ctx>.<rule>"
-ContextListFunction(ctx, rule) ::= "<ctx>.<rule>_list()"
+ContextListFunction(ctx, rule) ::= "<ctx>.<rule>__list()"
 StringType() ::= "string | undefined"
 ContextMember(ctx, member) ::= "<ctx>._<member>"
 SubContextLocal(ctx, subctx, local) ::= "<ctx>.<subctx>.<local>"
