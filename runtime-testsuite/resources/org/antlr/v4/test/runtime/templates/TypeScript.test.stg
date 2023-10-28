@@ -52,7 +52,7 @@ StringList() ::= "string[]"
 
 BuildParseTrees() ::= "this.buildParseTrees = true;"
 
-BailErrorStrategy() ::= <%this._errHandler = new antlr.BailErrorStrategy();%>
+BailErrorStrategy() ::= <%this.errorHandler = new antlr.BailErrorStrategy();%>
 
 ToStringTree(s) ::= <%<s>.toStringTree(null, this)%>
 
@@ -66,11 +66,11 @@ TextEquals(a) ::= <%this.text==="<a>"%>
 
 PlusText(a) ::= <%"<a>" + this.text%>
 
-InputText() ::= "this._input.getText()"
+InputText() ::= "this.inputStream.getText()"
 
-LTEquals(i, v) ::= <%this._input.LT(<i>).text===<v>%>
+LTEquals(i, v) ::= <%this.inputStream.LT(<i>).text===<v>%>
 
-LANotEquals(i, v) ::= <%this._input.LA(<i>)!=<v>%>
+LANotEquals(i, v) ::= <%this.inputStream.LA(<i>)!=<v>%>
 
 TokenStartColumnEquals(i) ::= <%this._tokenStartColumn===<i>%>
 
@@ -80,7 +80,7 @@ GetExpectedTokenNames() ::= "this.getExpectedTokens().toString(this.literalNames
 
 ImportRuleInvocationStack() ::= <<
 @parser::header {
-	import { arrayToString } from 'antlr4';
+	import { arrayToString } from 'antlr4ng';
 }>>
 
 RuleInvocationStack() ::= "arrayToString(this.getRuleInvocationStack())"
@@ -108,10 +108,10 @@ PositionAdjustingLexerDef() ::= ""
 PositionAdjustingLexer() ::= <<
 
 resetAcceptPosition (index: number, line: number, column: number) : void {
-	this._input.seek(index);
+	this.inputStream.seek(index);
 	this.line = line;
 	this.column = column;
-	this.interpreter.consume(this._input);
+	this.interpreter.consume(this.inputStream);
 }
 
 emit () : any /* should be Token */ {
@@ -133,7 +133,7 @@ handleAcceptPositionForIdentifier () : boolean {
 	) {
 		identifierLength += 1;
 	}
-	if (this._input.index > this._tokenStartCharIndex + identifierLength) {
+	if (this.inputStream.index > this._tokenStartCharIndex + identifierLength) {
 		var offset = identifierLength - 1;
 		this.resetAcceptPosition(this._tokenStartCharIndex + offset,
 				this._tokenStartLine, this._tokenStartColumn + offset);
@@ -144,7 +144,7 @@ handleAcceptPositionForIdentifier () : boolean {
 }
 
 handleAcceptPositionForKeyword (keyword: string) : boolean {
-	if (this._input.index > this._tokenStartCharIndex + keyword.length) {
+	if (this.inputStream.index > this._tokenStartCharIndex + keyword.length) {
 		var offset = keyword.length - 1;
 		this.resetAcceptPosition(this._tokenStartCharIndex + offset,
 			this._tokenStartLine, this._tokenStartColumn + offset);
@@ -162,7 +162,7 @@ static isIdentifierChar (c: string) {
 
 BasicListener(X) ::= <<
 @parser::header {
-import { ParseTreeWalker } from 'antlr4';
+import { ParseTreeWalker } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 	visitTerminal(node: TerminalNode) {
@@ -203,7 +203,7 @@ class MyRuleNode extends antlr.ParserRuleContext {
 
 TokenGetterListener(X) ::= <<
 @parser::header {
-import { arrayToString, ParseTreeWalker } from 'antlr4';
+import { arrayToString, ParseTreeWalker } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 
@@ -224,7 +224,7 @@ class LeafListener extends <X>Listener {
 
 RuleGetterListener(X) ::= <<
 @parser::header {
-import { ParseTreeWalker } from 'antlr4';
+import { ParseTreeWalker } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 	exitA? = (ctx: AContext) => {
@@ -243,7 +243,7 @@ class LeafListener extends <X>Listener {
 
 LRListener(X) ::= <<
 @parser::header {
-import { ParseTreeWalker } from 'antlr4';
+import { ParseTreeWalker } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 
@@ -263,7 +263,7 @@ class LeafListener extends <X>Listener {
 
 LRWithLabelsListener(X) ::= <<
 @parser::header {
-import { ParseTreeWalker } from 'antlr4';
+import { ParseTreeWalker } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 

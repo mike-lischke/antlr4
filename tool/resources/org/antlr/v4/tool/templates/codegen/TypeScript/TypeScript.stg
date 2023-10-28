@@ -187,7 +187,7 @@ case <f.ruleIndex>:
 
 dumpActions(recog, argFuncs, actionFuncs, sempredFuncs) ::= <<
 <if(actionFuncs)>
-public action(localContext: antlr.RuleContext, ruleIndex: number, actionIndex: number): void {
+public override action(localContext: antlr.RuleContext, ruleIndex: number, actionIndex: number): void {
     switch (ruleIndex) {
     <recog.actionFuncs.values:{f|
 case <f.ruleIndex>:
@@ -667,10 +667,10 @@ SetNonLocalAttr(s, rhsChunks) ::=
 
 AddToLabelList(a) ::= "<ctx(a.label)>._<a.listName>.push(<labelref(a.label)>);"
 
-TokenDecl(t) ::= "_<t.escapedName>!: <TokenLabelType()>"
+TokenDecl(t) ::= "_<t.escapedName>: <TokenLabelType()> | null"
 TokenTypeDecl(t) ::= "let <t.escapedName>: number;"
 TokenListDecl(t) ::= "_<t.escapedName>: antlr.Token[] = []"
-RuleContextDecl(r) ::= "_<r.escapedName>!: <r.ctxName>"
+RuleContextDecl(r) ::= "_<r.escapedName>: <r.ctxName><if(r.optional)> | null<endif>"
 RuleContextListDecl(rdecl) ::= "_<rdecl.escapedName>: <rdecl.ctxName>[] = []"
 
 ContextTokenGetterDecl(t)      ::= <<
@@ -744,7 +744,7 @@ export class <struct.escapedName> extends <if(contextSuperClass)><contextSuperCl
         return <parser.name>.RULE_<struct.derivedFromName>;
     }
 <if(struct.provideCopyFrom)><! don't need copy unless we have subclasses !>
-    public copyFrom(ctx: <struct.name>): void {
+    public override copyFrom(ctx: <struct.name>): void {
         super.copyFrom(ctx);
         <struct.attrs:{a | this.<a.escapedName> = ctx.<a.escapedName>;}; separator="\n">
     }

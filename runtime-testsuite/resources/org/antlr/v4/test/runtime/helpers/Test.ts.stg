@@ -1,5 +1,6 @@
+import fs from "fs";
 import {
-	FileStream,
+	CharStreams,
 	CommonTokenStream,
 	DiagnosticErrorListener,
 	Lexer,
@@ -8,7 +9,7 @@ import {
 	RuleContext,
 	ParserRuleContext,
 	PredictionMode
-} from 'antlr4';
+} from 'antlr4ng';
 import { <lexerName> } from './<lexerName>.js';
 <if(parserName)>
 import { <parserName> } from './<parserName>.js';
@@ -23,7 +24,7 @@ class TreeShapeListener extends ParseTreeListener {
     enterEveryRule(ctx: ParserRuleContext) {
         for (let i = 0; i \< ctx.getChildCount(); i++) {
             const child = ctx.getChild(i) as RuleContext;
-            const parent = child.parentCtx;
+            const parent = child.parent;
             if (parent!.ruleContext !== ctx || !(parent instanceof RuleContext)) {
                 throw `Invalid parse tree shape detected.`;
             }
@@ -33,7 +34,8 @@ class TreeShapeListener extends ParseTreeListener {
 <endif>
 
 function main(argv: string[]): void {
-    const input = new FileStream(argv[2], "utf-8", true);
+    const text = fs.readFileSync(argv[2], { encoding: "utf-8" });
+    const input = CharStreams.fromString(text);
     const lexer = new <lexerName>(input);
     const stream = new CommonTokenStream(lexer);
 <if(parserName)>
@@ -45,7 +47,7 @@ function main(argv: string[]): void {
         println : function(s: string) { console.log(s); },
         print : function(s: string) { process.stdout.write(s); }
     };
-    parser._interp.predictionMode = PredictionMode.<predictionMode>;
+    parser.interpreter.predictionMode = PredictionMode.<predictionMode>;
 <if(!buildParseTree)>
     parser.buildParseTrees = false;
 <endif>
@@ -57,7 +59,7 @@ function main(argv: string[]): void {
         console.log(stream.tokens[i].toString());
     }
 <if(showDFA)>
-    process.stdout.write(lexer._interp.decisionToDFA[Lexer.DEFAULT_MODE].toLexerString());
+    process.stdout.write(lexer.interpreter.decisionToDFA[Lexer.DEFAULT_MODE].toLexerString());
 <endif>
 <endif>
 }
