@@ -35,7 +35,7 @@ type int = number;
 ListenerFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-import { ParseTreeListener } from "antlr4ng";
+import { ErrorNode, ParseTreeListener, ParserRuleContext, TerminalNode } from "antlr4ng";
 
 <header>
 
@@ -47,7 +47,7 @@ import { ParseTreeListener } from "antlr4ng";
  * This interface defines a complete listener for a parse tree produced by
  * `<file.parserName>`.
  */
-export class <file.grammarName>Listener extends ParseTreeListener {
+export class <file.grammarName>Listener implements ParseTreeListener {
     <file.listenerNames:{lname |
 /**
 <if(file.listenerLabelRuleNames.(lname))>
@@ -69,6 +69,11 @@ enter<lname; format="cap">?: (ctx: <lname; format="cap">Context) => void;
  * @param ctx the parse tree
  */
 exit<lname; format="cap">?: (ctx: <lname; format="cap">Context) => void;}; separator="\n">
+
+    visitTerminal(node: TerminalNode): void {}
+    visitErrorNode(node: ErrorNode): void {}
+    enterEveryRule(node: ParserRuleContext): void {}
+    exitEveryRule(node: ParserRuleContext): void {}
 }
 
 <namedActions.afterListener>
@@ -77,7 +82,7 @@ exit<lname; format="cap">?: (ctx: <lname; format="cap">Context) => void;}; separ
 VisitorFile(file, header, namedActions) ::= <<
 <fileHeader(file.grammarFileName, file.ANTLRVersion)>
 
-import { ParseTreeVisitor } from "antlr4ng";
+import { AbstractParseTreeVisitor } from "antlr4ng";
 
 <header>
 
@@ -92,7 +97,7 @@ import { ParseTreeVisitor } from "antlr4ng";
  * @param \<Result> The return type of the visit operation. Use `void` for
  * operations with no return type.
  */
-export class <file.grammarName>Visitor\<Result> extends ParseTreeVisitor\<Result> {
+export class <file.grammarName>Visitor\<Result> extends AbstractParseTreeVisitor\<Result> {
     <file.visitorNames:{lname |
 /**
 <if(file.visitorLabelRuleNames.(lname))>
@@ -247,7 +252,7 @@ case <index>:
 
 RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,finallyAction,postamble,exceptions) ::= <<
 <if(currentRule.modifiers)><currentRule.modifiers:{f | <f> }><else>public <endif><currentRule.escapedName>(<currentRule.args:{a | <a.escapedName>: <a.type>}; separator=", ">): <currentRule.ctxType> {
-    let localContext = new <currentRule.ctxType>(this._ctx, this.state<currentRule.args:{a | , <a.escapedName>}>);
+    let localContext = new <currentRule.ctxType>(this.context, this.state<currentRule.args:{a | , <a.escapedName>}>);
     this.enterRule(localContext, <currentRule.startState>, <parser.name>.RULE_<currentRule.name>);
     <namedActions.init>
     <locals; separator="\n">
@@ -282,7 +287,7 @@ RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,fina
 
 LeftFactoredRuleFunction(currentRule,args,code,locals,namedActions,finallyAction,postamble) ::= <<
 <if(currentRule.modifiers)><currentRule.modifiers:{f | <f> }><else>private <endif><currentRule.ctxType> <currentRule.escapedName>(<args; separator=",">) {
-    let localContext = new <currentRule.ctxType>(this._ctx, this.state<currentRule.args:{a | , <a.escapedName>}>);
+    let localContext = new <currentRule.ctxType>(this.context, this.state<currentRule.args:{a | , <a.escapedName>}>);
     this.enterLeftFactoredRule(localContext, <currentRule.startState>, <parser.name>.RULE_<currentRule.variantOf>);
     <namedActions.init>
     <locals; separator="\n">
@@ -315,7 +320,7 @@ LeftFactoredRuleFunction(currentRule,args,code,locals,namedActions,finallyAction
 // needs to be generated.
 LeftUnfactoredRuleFunction(currentRule,args,code,locals,namedActions,finallyAction,postamble) ::= <<
 <if(currentRule.modifiers)><currentRule.modifiers:{f | <f> }><else>private <endif><currentRule.ctxType> <currentRule.name>(<args; separator=",">) {
-    let localContext = new <currentRule.ctxType>(this._ctx, this.state<currentRule.args:{a | , <a.name>}>);
+    let localContext = new <currentRule.ctxType>(this.context, this.state<currentRule.args:{a | , <a.name>}>);
     this.enterRule(localContext, <currentRule.startState>, <parser.name>.RULE_<currentRule.variantOf>);
     <namedActions.init>
     <locals; separator="\n">
@@ -355,9 +360,9 @@ LeftRecursiveRuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,
         _p = 0;
     }
 
-    let parentContext = this._ctx;
+    let parentContext = this.context;
     let parentState = this.state;
-    let localContext = new <currentRule.ctxType>(this._ctx, parentState<currentRule.args:{a | , <a.escapedName>}>);
+    let localContext = new <currentRule.ctxType>(this.context, parentState<currentRule.args:{a | , <a.escapedName>}>);
     let previousContext = localContext;
     let _startState = <currentRule.startState>;
     this.enterRecursionRule(localContext, <currentRule.startState>, <parser.name>.RULE_<currentRule.name>, _p);
@@ -472,7 +477,7 @@ this.state = <choice.stateNumber>;
 this.errorHandler.sync(this);
 <if(choice.label)><labelref(choice.label)> = this.tokenStream.LT(1);<endif>
 <preamble; separator="\n">
-switch (this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this._ctx) ) {
+switch (this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this.context) ) {
 <alts:{alt |
 case <i>:
     <alt>
@@ -483,7 +488,7 @@ case <i>:
 OptionalBlock(choice, alts, error) ::= <<
 this.state = <choice.stateNumber>;
 this.errorHandler.sync(this);
-switch (this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this._ctx) ) {
+switch (this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this.context) ) {
 <alts:{alt |
 case <i><if(!choice.ast.greedy)> + 1<endif>:
     <alt>
@@ -494,7 +499,7 @@ case <i><if(!choice.ast.greedy)> + 1<endif>:
 StarBlock(choice, alts, sync, iteration) ::= <<
 this.state = <choice.stateNumber>;
 this.errorHandler.sync(this);
-alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this._ctx);
+alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this.context);
 while (alternative !== <choice.exitAlt> && alternative !== antlr.ATN.INVALID_ALT_NUMBER) {
     if (alternative === 1<if(!choice.ast.greedy)> + 1<endif>) {
         <iteration>
@@ -502,7 +507,7 @@ while (alternative !== <choice.exitAlt> && alternative !== antlr.ATN.INVALID_ALT
     }
     this.state = <choice.loopBackStateNumber>;
     this.errorHandler.sync(this);
-    alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this._ctx);
+    alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this.context);
 }
 >>
 
@@ -521,7 +526,7 @@ case <i><if(!choice.ast.greedy)> + 1<endif>:
     }
     this.state = <choice.loopBackStateNumber>;<! loopback/exit decision !>
     this.errorHandler.sync(this);
-    alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this._ctx);
+    alternative = this.interpreter.adaptivePredict(this.tokenStream, <choice.decision>, this.context);
 } while (alternative !== <choice.exitAlt> && alternative !== antlr.ATN.INVALID_ALT_NUMBER);
 >>
 
@@ -651,13 +656,13 @@ TokenPropertyRef_int(t)     ::= "(<ctx(t)>._<t.label> != null ? Number(<ctx(t)>.
 
 RulePropertyRef_start(r)  ::= "(<ctx(r)>._<r.label> != null ? (<ctx(r)>._<r.label>.start) : undefined)"
 RulePropertyRef_stop(r)   ::= "(<ctx(r)>._<r.label> != null ? (<ctx(r)>._<r.label>.stop) : undefined)"
-RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(new antlr.Interval(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop)) : undefined)"
+RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : undefined)"
 RulePropertyRef_ctx(r)    ::= "<ctx(r)>._<r.label>"
 RulePropertyRef_parser(r) ::= "this"
 
 ThisRulePropertyRef_start(r)  ::= "localContext.start"
 ThisRulePropertyRef_stop(r)   ::= "localContext.stop"
-ThisRulePropertyRef_text(r)   ::= "this.tokenStream.getText(new antlr.Interval(localContext.start, this.tokenStream.LT(-1)))"
+ThisRulePropertyRef_text(r)   ::= "this.tokenStream.getText(localContext.start, this.tokenStream.LT(-1))"
 ThisRulePropertyRef_ctx(r)    ::= "localContext"
 ThisRulePropertyRef_parser(r) ::= "this"
 
@@ -767,7 +772,7 @@ export class <struct.escapedName> extends <struct.parentRule; format="cap">Conte
 >>
 
 ListenerDispatchMethod(method) ::= <<
-public <if(method.isEnter)>enter<else>exit<endif>Rule(listener: <parser.grammarName>Listener): void {
+public override <if(method.isEnter)>enter<else>exit<endif>Rule(listener: <parser.grammarName>Listener): void {
     if(listener.<if(method.isEnter)>enter<else>exit<endif><struct.derivedFromName; format="cap">) {
          listener.<if(method.isEnter)>enter<else>exit<endif><struct.derivedFromName; format="cap">(this);
     }
@@ -775,7 +780,7 @@ public <if(method.isEnter)>enter<else>exit<endif>Rule(listener: <parser.grammarN
 >>
 
 VisitorDispatchMethod(method) ::= <<
-public override accept\<Result>(visitor: <parser.grammarName>Visitor\<Result>): Result {
+public override accept\<Result>(visitor: <parser.grammarName>Visitor\<Result>): Result | null {
     if (visitor.visit<struct.derivedFromName; format="cap">) {
         return visitor.visit<struct.derivedFromName; format="cap">(this);
     } else {
@@ -796,9 +801,9 @@ ctx(actionChunk) ::= "<typedContext(actionChunk.ctx)>"
 typedContext(ctx) ::= "<if(ctx.provideCopyFrom)>(localContext as <ctx.name>)<else>localContext<endif>"
 
 // used for left-recursive rules
-recRuleAltPredicate(ruleName,opPrec)  ::= "this.precpred(this._ctx, <opPrec>)"
+recRuleAltPredicate(ruleName,opPrec)  ::= "this.precpred(this.context, <opPrec>)"
 recRuleSetReturnAction(src,name)      ::= "$<name>=$<src>.<name>;"
-recRuleSetStopToken()                 ::= "this._ctx.stop = this.tokenStream.LT(-1);"
+recRuleSetStopToken()                 ::= "this.context!.stop = this.tokenStream.LT(-1);"
 
 recRuleAltStartAction(ruleName, ctxName, label, isListLabel) ::= <<
 localContext = new <ctxName>Context(parentContext, parentState);
@@ -826,7 +831,7 @@ this.pushNewRecursionContext(localContext, _startState, <parser.name>.RULE_<rule
 
 recRuleReplaceContext(ctxName) ::= <<
 localContext = new <ctxName>Context(localContext);
-this._ctx = localContext;
+this.context = localContext;
 previousContext = localContext;
 >>
 

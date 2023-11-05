@@ -162,12 +162,16 @@ static isIdentifierChar (c: string) {
 
 BasicListener(X) ::= <<
 @parser::header {
-import { ParseTreeWalker } from 'antlr4ng';
+import { ParseTreeWalker, TerminalNode, ErrorNode, ParserRuleContext } from 'antlr4ng';
 
 class LeafListener extends <X>Listener {
 	visitTerminal(node: TerminalNode) {
 		console.log(node.symbol.text);
 	}
+
+	public visitErrorNode(node: ErrorNode): void { }
+    public enterEveryRule(ctx: ParserRuleContext): void { }
+	public exitEveryRule(ctx: ParserRuleContext): void { }
 }
 
 }

@@ -8,7 +8,9 @@ import {
 	ParseTreeWalker,
 	RuleContext,
 	ParserRuleContext,
-	PredictionMode
+	PredictionMode,
+    TerminalNode,
+    ErrorNode
 } from 'antlr4ng';
 import { <lexerName> } from './<lexerName>.js';
 <if(parserName)>
@@ -20,8 +22,8 @@ import { <grammarName>Listener } from './<grammarName>Listener.js';
 import { <grammarName>Visitor } from './<grammarName>Visitor.js';
 <endif>
 
-class TreeShapeListener extends ParseTreeListener {
-    enterEveryRule(ctx: ParserRuleContext) {
+class TreeShapeListener implements ParseTreeListener {
+    public enterEveryRule(ctx: ParserRuleContext) {
         for (let i = 0; i \< ctx.getChildCount(); i++) {
             const child = ctx.getChild(i) as RuleContext;
             const parent = child.parent;
@@ -30,6 +32,10 @@ class TreeShapeListener extends ParseTreeListener {
             }
         }
     }
+
+    public visitTerminal(node: TerminalNode): void { }
+	public visitErrorNode(node: ErrorNode): void { }
+	public exitEveryRule(ctx: ParserRuleContext): void { }
 }
 <endif>
 
