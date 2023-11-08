@@ -157,7 +157,7 @@ export class <parser.name> extends <superClass; null="antlr.Parser"> {
     <funcs; separator="\n">
 
 <if(sempredFuncs)>
-    public override sempred(localContext: antlr.RuleContext, ruleIndex: number, predIndex: number): boolean {
+    public override sempred(localContext: antlr.RuleContext | null, ruleIndex: number, predIndex: number): boolean {
         switch (ruleIndex) {
         <parser.sempredFuncs.values:{f|
 case <f.ruleIndex>:
@@ -192,7 +192,7 @@ case <f.ruleIndex>:
 
 dumpActions(recog, argFuncs, actionFuncs, sempredFuncs) ::= <<
 <if(actionFuncs)>
-public override action(localContext: antlr.RuleContext, ruleIndex: number, actionIndex: number): void {
+public override action(localContext: antlr.RuleContext | null, ruleIndex: number, actionIndex: number): void {
     switch (ruleIndex) {
     <recog.actionFuncs.values:{f|
 case <f.ruleIndex>:
@@ -203,7 +203,7 @@ case <f.ruleIndex>:
 <actionFuncs.values; separator="\n">
 <endif>
 <if(sempredFuncs)>
-public override sempred(localContext: antlr.RuleContext, ruleIndex: number, predIndex: number): boolean {
+public override sempred(localContext: antlr.RuleContext | null, ruleIndex: number, predIndex: number): boolean {
     switch (ruleIndex) {
     <recog.sempredFuncs.values:{f|
 case <f.ruleIndex>:
@@ -226,7 +226,7 @@ public constructor(input: antlr.TokenStream) {
  * overriding implementation impossible to maintain.
  */
 RuleActionFunction(r, actions) ::= <<
-private <r.name>_action(localContext: <r.ctxType>, actionIndex: number): void {
+private <r.name>_action(localContext: <r.ctxType> | null, actionIndex: number): void {
     switch (actionIndex) {
     <actions:{index|
 case <index>:
@@ -240,7 +240,7 @@ case <index>:
  * overriding implementation impossible to maintain.
  */
 RuleSempredFunction(r, actions) ::= <<
-private <r.name>_sempred(localContext: <r.ctxType>, predIndex: number): boolean {
+private <r.name>_sempred(localContext: <r.ctxType> | null, predIndex: number): boolean {
     switch (predIndex) {
     <actions:{index|
 case <index>:
@@ -675,7 +675,7 @@ AddToLabelList(a) ::= "<ctx(a.label)>._<a.listName>.push(<labelref(a.label)>);"
 TokenDecl(t) ::= "_<t.escapedName>: <TokenLabelType()> | null"
 TokenTypeDecl(t) ::= "let <t.escapedName>: number;"
 TokenListDecl(t) ::= "_<t.escapedName>: antlr.Token[] = []"
-RuleContextDecl(r) ::= "_<r.escapedName>: <r.ctxName><if(r.optional)> | null<endif>"
+RuleContextDecl(r) ::= "_<r.escapedName>: <r.ctxName>"
 RuleContextListDecl(rdecl) ::= "_<rdecl.escapedName>: <rdecl.ctxName>[] = []"
 
 ContextTokenGetterDecl(t)      ::= <<
