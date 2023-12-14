@@ -646,16 +646,16 @@ SetAttr(s,rhsChunks) ::= "<ctx(s)>.<s.escapedName> = <rhsChunks>;"
 TokenLabelType()  ::= "<file.TokenLabelType; null={Token}>"
 InputSymbolType() ::= "<file.InputSymbolType; null={Token}>"
 
-TokenPropertyRef_text(t)    ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.text : undefined)"
-TokenPropertyRef_type(t)    ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.type : 0)"
-TokenPropertyRef_line(t)    ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.line : 0)"
-TokenPropertyRef_pos(t)     ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.charPositionInLine : 0)"
-TokenPropertyRef_channel(t) ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.channel : 0)"
-TokenPropertyRef_index(t)   ::= "(<ctx(t)>._<t.label> != null ? <ctx(t)>._<t.label>.tokenIndex : 0)"
-TokenPropertyRef_int(t)     ::= "(<ctx(t)>._<t.label> != null ? Number(<ctx(t)>._<t.label>.text) : 0)"
+TokenPropertyRef_text(t)    ::= "(<ctx(t)>._<t.label>?.text ?? '')"
+TokenPropertyRef_type(t)    ::= "(<ctx(t)>._<t.label>?.type ?? 0)"
+TokenPropertyRef_line(t)    ::= "(<ctx(t)>._<t.label>?.line ?? 0)"
+TokenPropertyRef_pos(t)     ::= "(<ctx(t)>._<t.label>?.column ?? 0)"
+TokenPropertyRef_channel(t) ::= "(<ctx(t)>._<t.label>?.channel ?? 0)"
+TokenPropertyRef_index(t)   ::= "(<ctx(t)>._<t.label>?.tokenIndex ?? 0)"
+TokenPropertyRef_int(t)     ::= "Number(<ctx(t)>._<t.label>?.text ?? '0')"
 
-RulePropertyRef_start(r)  ::= "(<ctx(r)>._<r.label> != null ? (<ctx(r)>._<r.label>.start) : undefined)"
-RulePropertyRef_stop(r)   ::= "(<ctx(r)>._<r.label> != null ? (<ctx(r)>._<r.label>.stop) : undefined)"
+RulePropertyRef_start(r)  ::= "(<ctx(r)>._<r.label>?.start)"
+RulePropertyRef_stop(r)   ::= "(<ctx(r)>._<r.label>?.stop)"
 RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : undefined)"
 RulePropertyRef_ctx(r)    ::= "<ctx(r)>._<r.label>"
 RulePropertyRef_parser(r) ::= "this"
@@ -668,14 +668,14 @@ ThisRulePropertyRef_parser(r) ::= "this"
 
 NonLocalAttrRef(s)            ::= "(this.getInvokingContext(<s.ruleIndex>) as <s.ruleName; format=\"cap\">Context).<s.escapedName>"
 SetNonLocalAttr(s, rhsChunks) ::=
-    "(this.getInvokingContext(<s.ruleIndex>) as <s.escapedName>Context).<s.escapedName> = <rhsChunks>;"
+    "(this.getInvokingContext(<s.ruleIndex>) as <s.ruleName; format=\"cap\">Context).<s.escapedName> = <rhsChunks>;"
 
 AddToLabelList(a) ::= "<ctx(a.label)>._<a.listName>.push(<labelref(a.label)>);"
 
-TokenDecl(t) ::= "_<t.escapedName>: <TokenLabelType()> | null"
+TokenDecl(t) ::= "_<t.escapedName>?: <TokenLabelType()> | null"
 TokenTypeDecl(t) ::= "let <t.escapedName>: number;"
 TokenListDecl(t) ::= "_<t.escapedName>: antlr.Token[] = []"
-RuleContextDecl(r) ::= "_<r.escapedName>: <r.ctxName>"
+RuleContextDecl(r) ::= "_<r.escapedName>?: <r.ctxName>"
 RuleContextListDecl(rdecl) ::= "_<rdecl.escapedName>: <rdecl.ctxName>[] = []"
 
 ContextTokenGetterDecl(t)      ::= <<
@@ -735,7 +735,7 @@ StructDecl(struct,ctorAttrs,attrs,getters,dispatchMethods,interfaces,extensionMe
 export class <struct.escapedName> extends <if(contextSuperClass)><contextSuperClass><else>antlr.ParserRuleContext<endif><if(interfaces)> implements <interfaces; separator=", "><endif> {
     <attrs:{a | public <a>;}; separator="\n">
     <if(struct.ctorAttrs)>
-    public constructor(parent: antlr.ParserRuleContext, invokingState: number<struct.ctorAttrs:{a |, <a.escapedName>: <a.type>}>) {
+    public constructor(parent: antlr.ParserRuleContext | null, invokingState: number<struct.ctorAttrs:{a |, <a.escapedName>: <a.type>}>) {
         super(parent, invokingState);
         <struct.ctorAttrs:{a | this.<a.escapedName> = <a.escapedName>;}; separator="\n">
     }

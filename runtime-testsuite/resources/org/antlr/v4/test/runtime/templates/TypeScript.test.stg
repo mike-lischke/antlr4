@@ -1,5 +1,5 @@
-writeln(s) ::= <<console.log(<s> || '');>>
-write(s) ::= <<process.stdout.write(<s> || '');>>
+writeln(s) ::= <<console.log(<s>);>>
+write(s) ::= <<process.stdout.write(<s>);>>
 writeList(s) ::= <<console.log(<s; separator="+">);>>
 
 False() ::= "false"
@@ -60,19 +60,19 @@ Column() ::= "this.column"
 
 Text() ::= "this.text"
 
-ValEquals(a,b) ::= <%<a>===<b>%>
+ValEquals(a,b) ::= <%<a> === <b>%>
 
-TextEquals(a) ::= <%this.text==="<a>"%>
+TextEquals(a) ::= <%this.text === "<a>"%>
 
 PlusText(a) ::= <%"<a>" + this.text%>
 
 InputText() ::= "this.inputStream.getText()"
 
-LTEquals(i, v) ::= <%this.inputStream.LT(<i>).text===<v>%>
+LTEquals(i, v) ::= <%this.inputStream.LT(<i>).text === <v>%>
 
-LANotEquals(i, v) ::= <%this.inputStream.LA(<i>)!=<v>%>
+LANotEquals(i, v) ::= <%this.inputStream.LA(<i>) != <v>%>
 
-TokenStartColumnEquals(i) ::= <%this._tokenStartColumn===<i>%>
+TokenStartColumnEquals(i) ::= <%this._tokenStartColumn === <i>%>
 
 ImportListener(X) ::= ""
 
