@@ -641,7 +641,7 @@ QRetValueRef(a) ::= "<ctx(a)>._<a.dict>.<a.escapedName>"
 TokenRef(t) ::= "<ctx(t)>?._<t.escapedName>"
 LabelRef(t) ::= "<ctx(t)>?._<t.escapedName>"
 ListLabelRef(t) ::= "<ctx(t)>?._<ListLabelName(t.escapedName)>"
-SetAttr(s,rhsChunks) ::= "<ctx(s)>?.<s.escapedName> = <rhsChunks>;"
+SetAttr(s,rhsChunks) ::= "<ctx(s)>!.<s.escapedName> = <rhsChunks>;"
 
 TokenLabelType()  ::= "<file.TokenLabelType; null={Token}>"
 InputSymbolType() ::= "<file.InputSymbolType; null={Token}>"
