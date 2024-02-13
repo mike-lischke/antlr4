@@ -626,9 +626,9 @@ catch (<catchArg>) {
 LexerSkipCommand()  ::= "this.skip();"
 LexerMoreCommand()  ::= "this.more();"
 LexerPopModeCommand() ::= "this.popMode();"
-LexerTypeCommand(arg, grammar)      ::= "this._type = <arg>;"
-LexerChannelCommand(arg, grammar)   ::= "this._channel = <arg>;"
-LexerModeCommand(arg, grammar)      ::= "this._mode = <arg>;"
+LexerTypeCommand(arg, grammar)      ::= "this.type = <arg>;"
+LexerChannelCommand(arg, grammar)   ::= "this.channel = <arg>;"
+LexerModeCommand(arg, grammar)      ::= "this.mode = <arg>;"
 LexerPushModeCommand(arg, grammar)  ::= "this.pushMode(<arg>);"
 
 ActionText(t) ::= "<t.text>"
@@ -656,7 +656,7 @@ TokenPropertyRef_int(t)     ::= "Number(<ctx(t)>._<t.label>?.text ?? '0')"
 
 RulePropertyRef_start(r)  ::= "(<ctx(r)>._<r.label>?.start)"
 RulePropertyRef_stop(r)   ::= "(<ctx(r)>._<r.label>?.stop)"
-RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : undefined)"
+RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : '')"
 RulePropertyRef_ctx(r)    ::= "<ctx(r)>._<r.label>"
 RulePropertyRef_parser(r) ::= "this"
 
@@ -836,7 +836,7 @@ previousContext = localContext;
 >>
 
 recRuleSetPrevCtx() ::= <<
-if (this._parseListeners != null) {
+if (this.parseListeners != null) {
     this.triggerExitRuleEvent();
 }
 previousContext = localContext;
