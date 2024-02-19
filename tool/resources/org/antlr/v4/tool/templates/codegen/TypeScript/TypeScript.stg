@@ -656,13 +656,13 @@ TokenPropertyRef_int(t)     ::= "Number(<ctx(t)>._<t.label>?.text ?? '0')"
 
 RulePropertyRef_start(r)  ::= "(<ctx(r)>._<r.label>?.start)"
 RulePropertyRef_stop(r)   ::= "(<ctx(r)>._<r.label>?.stop)"
-RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getText(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : '')"
+RulePropertyRef_text(r)   ::= "(<ctx(r)>._<r.label> != null ? this.tokenStream.getTextFromRange(<ctx(r)>._<r.label>.start, <ctx(r)>._<r.label>.stop) : '')"
 RulePropertyRef_ctx(r)    ::= "<ctx(r)>._<r.label>"
 RulePropertyRef_parser(r) ::= "this"
 
 ThisRulePropertyRef_start(r)  ::= "localContext.start"
 ThisRulePropertyRef_stop(r)   ::= "localContext.stop"
-ThisRulePropertyRef_text(r)   ::= "this.tokenStream.getText(localContext.start, this.tokenStream.LT(-1))"
+ThisRulePropertyRef_text(r)   ::= "this.tokenStream.getTextFromRange(localContext.start, this.tokenStream.LT(-1))"
 ThisRulePropertyRef_ctx(r)    ::= "localContext"
 ThisRulePropertyRef_parser(r) ::= "this"
 
