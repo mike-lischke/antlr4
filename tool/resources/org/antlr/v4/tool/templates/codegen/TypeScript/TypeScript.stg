@@ -157,7 +157,7 @@ export class <parser.name> extends <superClass; null="antlr.Parser"> {
     <funcs; separator="\n">
 
 <if(sempredFuncs)>
-    public override sempred(localContext: antlr.RuleContext | null, ruleIndex: number, predIndex: number): boolean {
+    public override sempred(localContext: antlr.ParserRuleContext | null, ruleIndex: number, predIndex: number): boolean {
         switch (ruleIndex) {
         <parser.sempredFuncs.values:{f|
 case <f.ruleIndex>:
@@ -192,7 +192,7 @@ case <f.ruleIndex>:
 
 dumpActions(recog, argFuncs, actionFuncs, sempredFuncs) ::= <<
 <if(actionFuncs)>
-public override action(localContext: antlr.RuleContext | null, ruleIndex: number, actionIndex: number): void {
+public override action(localContext: antlr.ParserRuleContext | null, ruleIndex: number, actionIndex: number): void {
     switch (ruleIndex) {
     <recog.actionFuncs.values:{f|
 case <f.ruleIndex>:
@@ -203,7 +203,7 @@ case <f.ruleIndex>:
 <actionFuncs.values; separator="\n">
 <endif>
 <if(sempredFuncs)>
-public override sempred(localContext: antlr.RuleContext | null, ruleIndex: number, predIndex: number): boolean {
+public override sempred(localContext: antlr.ParserRuleContext | null, ruleIndex: number, predIndex: number): boolean {
     switch (ruleIndex) {
     <recog.sempredFuncs.values:{f|
 case <f.ruleIndex>:
@@ -269,7 +269,6 @@ RuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,namedActions,fina
     <else>
     catch (re) {
         if (re instanceof antlr.RecognitionException) {
-            localContext.exception = re;
             this.errorHandler.reportError(this, re);
             this.errorHandler.recover(this, re);
         } else {
@@ -300,7 +299,6 @@ LeftFactoredRuleFunction(currentRule,args,code,locals,namedActions,finallyAction
         <namedActions.after>
     } catch (re) {
         if (re instanceof antlr.RecognitionException) {
-            localContext.exception = re;
             this.errorHandler.reportError(this, re);
             this.errorHandler.recover(this, re);
         } else {
@@ -334,7 +332,6 @@ LeftUnfactoredRuleFunction(currentRule,args,code,locals,namedActions,finallyActi
     }
     catch (re) {
         if (re instanceof antlr.RecognitionException) {
-            localContext.exception = re;
             this.errorHandler.reportError(this, re);
             this.errorHandler.recover(this, re);
         } else {
@@ -378,7 +375,6 @@ LeftRecursiveRuleFunction(currentRule,args,code,locals,ruleCtx,altLabelCtxs,
     }
     catch (re) {
         if (re instanceof antlr.RecognitionException) {
-            localContext.exception = re;
             this.errorHandler.reportError(this, re);
             this.errorHandler.recover(this, re);
         } else {
@@ -633,10 +629,10 @@ LexerPushModeCommand(arg, grammar)  ::= "this.pushMode(<arg>);"
 
 ActionText(t) ::= "<t.text>"
 ActionTemplate(t) ::= "<t.st>"
-ArgRef(a) ::= "localContext.<a.escapedName>"
+ArgRef(a) ::= "localContext?.<a.escapedName>!"
 LocalRef(a) ::= "localContext.<a.escapedName>"
 RetValueRef(a) ::= "localContext.<a.escapedName>"
-QRetValueRef(a) ::= "<ctx(a)>._<a.dict>.<a.escapedName>"
+QRetValueRef(a) ::= "<ctx(a)>._<a.dict>!.<a.escapedName>"
 /** How to translate $tokenLabel */
 TokenRef(t) ::= "<ctx(t)>?._<t.escapedName>"
 LabelRef(t) ::= "<ctx(t)>?._<t.escapedName>"
@@ -670,7 +666,7 @@ NonLocalAttrRef(s)            ::= "(this.getInvokingContext(<s.ruleIndex>) as <s
 SetNonLocalAttr(s, rhsChunks) ::=
     "(this.getInvokingContext(<s.ruleIndex>) as <s.ruleName; format=\"cap\">Context).<s.escapedName> = <rhsChunks>;"
 
-AddToLabelList(a) ::= "<ctx(a.label)>._<a.listName>.push(<labelref(a.label)>);"
+AddToLabelList(a) ::= "<ctx(a.label)>._<a.listName>.push(<labelref(a.label)>!);"
 
 TokenDecl(t) ::= "_<t.escapedName>?: <TokenLabelType()> | null"
 TokenTypeDecl(t) ::= "let <t.escapedName>: number;"
@@ -715,7 +711,7 @@ public <r.escapedName>(i?: number): <r.ctxName>[] | <r.ctxName> | null {
 }
 >>
 
-LexerRuleContext() ::= "antlr.RuleContext"
+LexerRuleContext() ::= "antlr.ParserRuleContext"
 
 /** The rule context name is the rule followed by a suffix; e.g.,
  *    r becomes rContext.
